@@ -1,0 +1,9 @@
+[package]
+name = "wigettes"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+macroquad = "0.4.13"
+qol = { git = "https://github.com/DrAlta/rust_quality_of_life.git", version = "0.1.6"}
