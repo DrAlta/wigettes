@@ -1,21 +1,28 @@
 use macroquad::prelude::*;
 
-use wigettes::widgets::button::draw_button;
+use wigettes::widgets::button::Button;
+use wigettes::Widget;
 
 #[macroquad::main("Widget test")]
 pub async fn main() {
     let camera = Camera2D {
-        zoom: vec2(2.0 / screen_width(), 2.0 / screen_height()) * 5.0,
+        zoom: vec2(2.0 / screen_width(), 2.0 / screen_height()) * 1.0,
         target: Vec2::ZERO,
         ..Default::default()
     };
     set_camera(&camera);
 
+    let font = load_ttf_font("./DancingScriptRegular.ttf").await.unwrap();
+
+    let button = Button::new("test", &font, 40, BROWN, WHITE);
+    let (w, h) = button.get_dimensions();
+    println!("w:{w} h:{h}");
+
     loop {
-        clear_background(WHITE);
+        clear_background(DARKBLUE);
 
         //let mouse_pos: Vec2 = mouse_position().into();
-        draw_button(0.0, 0.0, 50.0, 20.0);
+        button.draw(0.0, 0.0, w.ceil(), h.ceil());
         next_frame().await;
     }
 }

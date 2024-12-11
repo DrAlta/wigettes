@@ -1,76 +1,76 @@
-use macroquad::{text::measure_text, prelude::Color};
+use macroquad::{
+    prelude::Color,
+    text::{measure_text, Font},
+};
 use qol::logy;
 
-use crate::{Results, widgets::label_text::LabelText, WigetteType};
+use crate::{widgets::label_text::LabelText, Results, Widget, WigetteType};
 
-
-pub struct Wigette {
-    pub (super) wigette_type: WigetteType,
-    pub (super) desired_x: u32,
-    pub (super) desired_y: u32,
-    pub (super) x: i64,
-    pub (super) y: i64,
-    pub (super) size_y: u32,
-    pub (super) size_x: u32,
-    pub (super) expand_x: bool,
-    pub (super) expand_y: bool,
+pub struct Wigette<'a> {
+    pub(super) wigette_type: WigetteType<'a>,
+    pub(super) desired_width: u32,
+    pub(super) desired_height: u32,
+    pub(super) x: i64,
+    pub(super) y: i64,
+    pub(super) height: u32,
+    pub(super) width: u32,
+    pub(super) expand_width: bool,
+    pub(super) expand_height: bool,
 }
 
-impl Wigette {
-    pub (super) fn get_expand_x(&self) -> bool {
-        self.expand_x
+impl<'a> Wigette<'a> {
+    pub(super) fn get_expand_width(&self) -> bool {
+        self.expand_width
     }
-    pub (super) fn get_expand_y(&self) -> bool {
-        self.expand_y
+    pub(super) fn get_expand_height(&self) -> bool {
+        self.expand_height
     }
-    pub (super) fn get_min_x(&self) -> u32 {
+    pub(super) fn get_min_width(&self) -> u32 {
         match &self.wigette_type {
-            WigetteType::Box => {
-                self.desired_x
-            },
-            WigetteType::HBox { children: _, distended_x, distended_y: _ } => {
-                distended_x.max(&self.desired_x).clone()
-            },
+            WigetteType::Box => self.desired_width,
+            WigetteType::HBox {
+                children: _,
+                distended_width,
+                distended_height: _,
+            } => distended_width.max(&self.desired_width).clone(),
             WigetteType::Label(label) => {
-                (measure_text(&label.text, None, label.font_size, 1.0).width as u32).max(self.desired_x.clone())
-            },
-            WigetteType::VBox { children: _, distended_x, distended_y:_ } => {
-                distended_x.max(&self.desired_x).clone()
+                (label.get_width().ceil() as u32).max(self.desired_width.clone())
             }
+            WigetteType::VBox {
+                distended_width, ..
+            } => distended_width.max(&self.desired_width).clone(),
         }
     }
-    pub (super) fn get_min_y(&self) -> u32 {
+    pub(super) fn get_min_height(&self) -> u32 {
         match &self.wigette_type {
-            WigetteType::Box => {
-                self.desired_y
-            },
-            WigetteType::HBox { children: _, distended_x: _, distended_y } => {
-                distended_y.max(&self.desired_y).clone()
-            },
+            WigetteType::Box => self.desired_height,
+            WigetteType::HBox {
+                distended_height, ..
+            } => distended_height.max(&self.desired_height).clone(),
             WigetteType::Label(label) => {
-                (measure_text(&label.text, None, label.font_size, 1.0).height as u32).max(self.desired_y.clone())
-            },
-            WigetteType::VBox { children: _, distended_x: _, distended_y } => {
-                distended_y.max(&self.desired_y).clone()
+                (label.get_height().ceil() as u32).max(self.desired_height.clone())
             }
+            WigetteType::VBox {
+                distended_height, ..
+            } => distended_height.max(&self.desired_height).clone(),
         }
     }
-    pub (super) fn set_size(&mut self, width: u32, height: u32) {
+    pub(super) fn set_size(&mut self, width: u32, height: u32) {
         let mut update = false;
-        if width < self.desired_x {
+        if width < self.desired_width {
             logy!("error", "tried to set width to less than min");
         } else {
-            if self.size_x != width {
-                self.size_x = width;
+            if self.width != width {
+                self.width = width;
                 update = true;
             }
         }
 
-        if height < self.desired_y {
+        if height < self.desired_height {
             logy!("error", "tried to set height to less than min");
         } else {
-            if self.size_y != height {
-                self.size_y = height;
+            if self.height != height {
+                self.height = height;
                 update = true;
             }
         }
@@ -90,95 +90,112 @@ impl Wigette {
         }
     }
     */
-    pub (super) fn get_height(&self) -> u32 {
-        let basic_y =self.size_y.max(self.get_min_y());
+    pub(super) fn get_height(&self) -> u32 {
+        let basic_y = self.height.max(self.get_min_height());
         if let WigetteType::Label(label) = &self.wigette_type {
             (measure_text(&label.text, None, label.font_size, 1.0).height as u32).max(basic_y)
         } else {
             basic_y
         }
     }
-    pub (super) fn get_width(&self) -> u32 {
-        let basic_x=self.size_x.max(self.get_min_x());
+    pub(super) fn get_width(&self) -> u32 {
+        let basic_width = self.width.max(self.get_min_width());
         if let WigetteType::Label(label) = &self.wigette_type {
-            (measure_text(&label.text, None, label.font_size, 1.0).width as u32).max(basic_x)
+            (measure_text(&label.text, None, label.font_size, 1.0).width as u32).max(basic_width)
         } else {
-            basic_x
+            basic_width
         }
     }
 }
 
 // public functions
 //creating functions
-impl Wigette {
-    pub fn new_label(width: u32, heigth: u32, expand_x: bool, expand_y: bool, text: String, font_size: u16, color:Color) -> Self {
-        Wigette { 
-            wigette_type: WigetteType::Label(LabelText::new(text, font_size, color)), 
-            desired_x: width,
-            size_x: width,
-            desired_y: heigth,
-            size_y: heigth,
+impl<'a> Wigette<'a> {
+    pub fn new_label(
+        width: u32,
+        heigth: u32,
+        expand_width: bool,
+        expand_height: bool,
+        text: String,
+        font: &'a Font,
+        font_size: u16,
+        color: Color,
+    ) -> Self {
+        Wigette {
+            wigette_type: WigetteType::Label(LabelText::new(text, font, font_size, color)),
+            desired_width: width,
+            width,
+            desired_height: heigth,
+            height: heigth,
             x: 0,
             y: 0,
-            expand_x,
-            expand_y,
-         }
+            expand_width,
+            expand_height,
+        }
     }
-    pub fn new_box(width: u32, heigth: u32, expand_x: bool, expand_y: bool) -> Self {
+    pub fn new_box(width: u32, heigth: u32, expand_width: bool, expand_height: bool) -> Self {
         Wigette {
             wigette_type: WigetteType::Box,
-            desired_x: width,
-            size_x: width,
-            desired_y: heigth,
-            size_y: heigth,
+            desired_width: width,
+            width,
+            desired_height: heigth,
+            height: heigth,
             x: 0,
             y: 0,
-            expand_x,
-            expand_y,
+            expand_width,
+            expand_height,
         }
     }
     pub fn new_hbox(
         width: u32,
         heigth: u32,
-        expand_x: bool,
-        expand_y: bool,
-        children: Vec<Wigette>,
+        expand_width: bool,
+        expand_height: bool,
+        children: Vec<Wigette<'a>>,
     ) -> Self {
         Wigette {
-            wigette_type: WigetteType::HBox{children, distended_x: 0, distended_y: 0},
-            desired_x: width,
-            size_x: width,
-            desired_y: heigth,
-            size_y: heigth,
+            wigette_type: WigetteType::HBox {
+                children,
+                distended_width: 0,
+                distended_height: 0,
+            },
+            desired_width: width,
+            width,
+            desired_height: heigth,
+            height: heigth,
             x: 0,
             y: 0,
-            expand_x,
-            expand_y,
+            expand_width,
+            expand_height,
         }
     }
     pub fn new_vbox(
         width: u32,
-        heigth: u32,
-        expand_x: bool,
-        expand_y: bool,
-        children: Vec<Wigette>,
+        height: u32,
+        expand_width: bool,
+        expand_height: bool,
+        children: Vec<Wigette<'a>>,
     ) -> Self {
         Wigette {
-            wigette_type: WigetteType::VBox{children, distended_x: 0, distended_y: 0},
-            desired_x: width,
-            size_x: width,
-            desired_y: heigth,
-            size_y: heigth,
+            wigette_type: WigetteType::VBox {
+                children,
+                distended_width: 0,
+                distended_height: 0,
+            },
+            desired_width: width,
+            width,
+            desired_height: height,
+            height,
             x: 0,
             y: 0,
-            expand_x,
-            expand_y,
+            expand_width,
+            expand_height,
         }
     }
 }
 
 //misc public funtions
-impl Wigette {
+impl<'a> Wigette<'a> {
     pub fn set_pos(&mut self, x: i64, y: i64) {
         /*
         if let WigetteType::Box = self.wigette_type  {
@@ -200,24 +217,16 @@ impl Wigette {
     }
     pub fn get_child(&self, index: usize) -> Option<&Wigette> {
         match &self.wigette_type {
-            WigetteType::HBox{children, distended_x: _, distended_y: _} => {
-                children.get(index)
-            }
-            WigetteType::VBox{children, distended_x: _, distended_y: _} => {
-                children.get(index)
-            }
-            _ => None
+            WigetteType::HBox { children, .. } => children.get(index),
+            WigetteType::VBox { children, .. } => children.get(index),
+            _ => None,
         }
     }
-    pub fn get_child_mut(&mut self, index: usize) -> Option<&mut Wigette> {
+    pub fn get_child_mut(&'a mut self, index: usize) -> Option<&mut Wigette> {
         match &mut self.wigette_type {
-            WigetteType::HBox{children, distended_x: _, distended_y: _} => {
-                children.get_mut(index)
-            }
-            WigetteType::VBox{children, distended_x: _, distended_y: _} => {
-                children.get_mut(index)
-            }
-            _ => None
+            WigetteType::HBox { children, .. } => children.get_mut(index),
+            WigetteType::VBox { children, .. } => children.get_mut(index),
+            _ => None,
         }
     }
     pub fn external_facing_draw(&mut self) {
@@ -228,14 +237,14 @@ impl Wigette {
 }
 
 //text_label
-impl Wigette {
+impl<'a> Wigette<'a> {
     pub fn set_text(&mut self, text: String) -> Results<()> {
         match &mut self.wigette_type {
             WigetteType::Label(inner) => {
                 inner.text = text;
                 Ok(())
             }
-            _ => Err("tried to set the text on not a text label".into())
+            _ => Err("tried to set the text on not a text label".into()),
         }
     }
     pub fn set_text_color(&mut self, text: String, color: Color) -> Results<()> {
@@ -245,7 +254,7 @@ impl Wigette {
                 inner.color = color;
                 Ok(())
             }
-            _ => Err("tried to set the text on not a text label".into())
+            _ => Err("tried to set the text on not a text label".into()),
         }
     }
 }
