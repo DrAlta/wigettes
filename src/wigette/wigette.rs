@@ -222,7 +222,7 @@ impl<'a> Wigette<'a> {
             _ => None,
         }
     }
-    pub fn get_child_mut(&'a mut self, index: usize) -> Option<&mut Wigette> {
+    pub fn get_child_mut(&mut self, index: usize) -> Option<&'a mut Wigette> {
         match &mut self.wigette_type {
             WigetteType::HBox { children, .. } => children.get_mut(index),
             WigetteType::VBox { children, .. } => children.get_mut(index),

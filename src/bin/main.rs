@@ -12,7 +12,7 @@ pub async fn main() {
     };
     set_camera(&camera);
 
-    let font = load_ttf_font("./DancingScriptRegular.ttf").await.unwrap();
+    let font = load_ttf_font("./FreeSans.ttf").await.unwrap();
 
     let button = Button::new("test", &font, 40, BROWN, WHITE);
     let (w, h) = button.get_dimensions();
