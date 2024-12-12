@@ -12,6 +12,8 @@ type Results<T> = Result<T, String>;
 
 #[cfg(test)]
 mod tests {
+    use std::cell::RefCell;
+
     use macroquad::prelude::*;
     use super::*;
 
@@ -31,7 +33,7 @@ mod tests {
                     true, 
                     true, 
                     "text".into(), 
-                    &font, 
+                    RefCell::new(font), 
                     10, 
                     BLANK
                 )

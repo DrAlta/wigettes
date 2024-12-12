@@ -2,7 +2,7 @@ use macroquad::prelude::*;
 
 use crate::{Widget, Wigette, WigetteType};
 
-impl<'a> Wigette<'a> {
+impl Wigette {
     pub const COLORS: [Color; 8] = [RED, PINK, BLUE, GREEN, PURPLE, YELLOW, ORANGE, MAGENTA];
     pub fn draw(&self, lvl: usize) {
         #[cfg(feature = "gui_debug")]

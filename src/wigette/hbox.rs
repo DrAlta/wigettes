@@ -1,9 +1,9 @@
 use crate::{LayoutRet, Wigette};
-impl<'a> Wigette<'a> {
+impl Wigette {
     pub fn h_size(
         my_min_width: u32,
         my_min_height: u32,
-        children: &mut Vec<Wigette<'a>>,
+        children: &mut Vec<Wigette>,
         padding: u32,
     ) -> LayoutRet {
         let my_min_width = my_min_width as i64;

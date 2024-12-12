@@ -1,15 +1,17 @@
+use std::{borrow::Borrow, cell::RefCell};
+
 use macroquad::prelude::*;
 
 use crate::Widget;
 
-pub struct LabelText<'a> {
+pub struct LabelText {
     pub text: String,
-    pub font: &'a Font,
+    pub font: RefCell<Font>,
     pub font_size: u16,
     pub color: Color,
 }
-impl<'a> LabelText<'a> {
-    pub fn new(text: String, font: &'a Font, font_size: u16, color: Color) -> Self {
+impl LabelText {
+    pub fn new(text: String, font: RefCell<Font>, font_size: u16, color: Color) -> Self {
         LabelText {
             text,
             font,
@@ -18,9 +20,9 @@ impl<'a> LabelText<'a> {
         }
     }
 }
-impl<'a> Widget for LabelText<'a> {
+impl Widget for LabelText {
     fn draw(&self, x: f32, y: f32, _: f32, _: f32) {
-        let offset_y = measure_text(&self.text, Some(self.font), self.font_size, 1.0).offset_y;
+        let offset_y = measure_text(&self.text, Some(self.font.borrow().borrow()), self.font_size, 1.0).offset_y;
         draw_text(
             &self.text,
             x,
@@ -31,7 +33,7 @@ impl<'a> Widget for LabelText<'a> {
     }
 
     fn get_dimensions(&self) -> (f32, f32) {
-        let x = measure_text(&self.text, Some(self.font), self.font_size, 1.0);
+        let x = measure_text(&self.text, Some(self.font.borrow().borrow()), self.font_size, 1.0);
         (x.width, x.height)
     }
 }

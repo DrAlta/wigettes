@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+
 use macroquad::{
     prelude::Color,
     text::{measure_text, Font},
@@ -6,8 +8,8 @@ use qol::logy;
 
 use crate::{widgets::label_text::LabelText, Results, Widget, WigetteType};
 
-pub struct Wigette<'a> {
-    pub(super) wigette_type: WigetteType<'a>,
+pub struct Wigette {
+    pub(super) wigette_type: WigetteType,
     pub(super) desired_width: u32,
     pub(super) desired_height: u32,
     pub(super) x: i64,
@@ -18,7 +20,7 @@ pub struct Wigette<'a> {
     pub(super) expand_height: bool,
 }
 
-impl<'a> Wigette<'a> {
+impl Wigette {
     pub(super) fn get_expand_width(&self) -> bool {
         self.expand_width
     }
@@ -110,14 +112,14 @@ impl<'a> Wigette<'a> {
 
 // public functions
 //creating functions
-impl<'a> Wigette<'a> {
+impl Wigette {
     pub fn new_label(
         width: u32,
         heigth: u32,
         expand_width: bool,
         expand_height: bool,
         text: String,
-        font: &'a Font,
+        font: RefCell<Font>,
         font_size: u16,
         color: Color,
     ) -> Self {
@@ -151,7 +153,7 @@ impl<'a> Wigette<'a> {
         heigth: u32,
         expand_width: bool,
         expand_height: bool,
-        children: Vec<Wigette<'a>>,
+        children: Vec<Wigette>,
     ) -> Self {
         Wigette {
             wigette_type: WigetteType::HBox {
@@ -174,7 +176,7 @@ impl<'a> Wigette<'a> {
         height: u32,
         expand_width: bool,
         expand_height: bool,
-        children: Vec<Wigette<'a>>,
+        children: Vec<Wigette>,
     ) -> Self {
         Wigette {
             wigette_type: WigetteType::VBox {
@@ -194,8 +196,8 @@ impl<'a> Wigette<'a> {
     }
 }
 
-impl<'a> Wigette<'a>{
-    pub fn get_child_mut(&mut self, index: usize) -> Option<&mut Wigette<'a>> {
+impl Wigette {
+    pub fn get_child_mut(&mut self, index: usize) -> Option<&mut Wigette> {
         let x=  match &mut self.wigette_type {
              WigetteType::HBox { children, .. } => children.get_mut(index),
              WigetteType::VBox { children, .. } => children.get_mut(index),
@@ -206,7 +208,7 @@ impl<'a> Wigette<'a>{
  
 }
 //misc public funtions
-impl<'a> Wigette<'a> {
+impl Wigette {
     pub fn set_pos(&mut self, x: i64, y: i64) {
         /*
         if let WigetteType::Box = self.wigette_type  {
@@ -226,7 +228,7 @@ impl<'a> Wigette<'a> {
             self.update_childrens_pos(2)
         }
     }
-    pub fn get_child(&'a self, index: usize) -> Option<&'a Wigette<'a>> {
+    pub fn get_child(&self, index: usize) -> Option<&Wigette> {
         match &self.wigette_type {
             WigetteType::HBox { children, .. } => children.get(index),
             WigetteType::VBox { children, .. } => children.get(index),
@@ -241,7 +243,7 @@ impl<'a> Wigette<'a> {
 }
 
 //text_label
-impl<'a> Wigette<'a> {
+impl Wigette {
     pub fn set_text(&mut self, text: String) -> Results<()> {
         match &mut self.wigette_type {
             WigetteType::Label(inner) => {

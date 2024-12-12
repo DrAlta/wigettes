@@ -1,6 +1,6 @@
 use crate::{LayoutRet, Wigette, WigetteType};
 
-impl<'a> Wigette<'a> {
+impl Wigette {
     pub fn update_childrens_pos(&mut self, padding: i64) {
         let mut turtle = 0_i64;
         let x = self.x + (padding / 2);
