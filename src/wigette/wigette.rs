@@ -194,6 +194,17 @@ impl<'a> Wigette<'a> {
     }
 }
 
+impl<'a> Wigette<'a>{
+    pub fn get_child_mut(&mut self, index: usize) -> Option<&mut Wigette<'a>> {
+        let x=  match &mut self.wigette_type {
+             WigetteType::HBox { children, .. } => children.get_mut(index),
+             WigetteType::VBox { children, .. } => children.get_mut(index),
+             _ => None,
+         };
+         x
+     }
+ 
+}
 //misc public funtions
 impl<'a> Wigette<'a> {
     pub fn set_pos(&mut self, x: i64, y: i64) {
@@ -221,14 +232,6 @@ impl<'a> Wigette<'a> {
             WigetteType::VBox { children, .. } => children.get(index),
             _ => None,
         }
-    }
-    pub fn get_child_mut(&'a mut self, index: usize) -> Option<&'a mut Wigette<'a>> {
-       let x: Option<&mut Wigette<'a>>=  match &mut self.wigette_type {
-            WigetteType::HBox { children, .. } => children.get_mut(index),
-            WigetteType::VBox { children, .. } => children.get_mut(index),
-            _ => None,
-        };
-        x
     }
     pub fn external_facing_draw(&mut self) {
         self.update_size();

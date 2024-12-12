@@ -38,7 +38,7 @@ mod tests {
             ]
         );
         let _ = a.get_child_mut(0);
-        let _ = a.get_child_mut(0).unwrap();
+        let _ = a.get_child_mut(0);
 
     }
 }
