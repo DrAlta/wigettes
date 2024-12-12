@@ -3,10 +3,15 @@ name = "wigettes"
 version = "0.1.0"
 edition = "2021"
 
+[lints.rust]
+rust_2018_idioms = "deny"
 
 [dependencies]
 macroquad = "0.4.13"
 qol = { git = "https://github.com/DrAlta/rust_quality_of_life.git", version = "0.1.6"}
+
+[dev-dependencies]
+async-std = {version = "1.13.0", features = ["attributes"]}
 
 [features]
 gui_debug = []

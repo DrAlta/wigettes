@@ -3,7 +3,7 @@ impl<'a> Wigette<'a> {
     pub fn v_size(
         my_min_width: usize,
         my_min_height: usize,
-        children: &mut Vec<Wigette>,
+        children: &mut Vec<Wigette<'a>>,
         padding: i64,
     ) -> LayoutRet {
         let mut needed_height = padding as usize * children.len();
