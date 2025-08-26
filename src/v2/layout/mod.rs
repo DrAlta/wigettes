@@ -3,6 +3,12 @@
 //  is the parent assumes that it is geiven all the responses it requested last time it was 
 // asked to layout it self.
 
+// widgets should put exes pading on ther right and bottom
+
+// containers should put extra panding around theri children on the up and left
+// that ther then extra in the child and around it in the parent balnce each other out
+
+
 pub mod foo;
 mod layout_response;
 pub use layout_response::LayoutResponse;
